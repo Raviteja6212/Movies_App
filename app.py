@@ -11,12 +11,8 @@ def index(message=""):
     if request.method=="POST":
         username = request.form.getlist('username')[0]
         password = request.form.getlist('password')[0]
-        venues=[
-            {"venue":"venue-1","shows":["10:30","10:40","10:50","11:00"]},
-            {"venue":"venue-2","shows":["10:30","10:40","10:50"]},
-            {"venue":"venue-3","shows":["10:30","10:40"]},
-            {"venue":"venue-4","shows":["10:30"]}]
         try:
+            print("TEST")
             sqliteConnection = sqlite3.connect('database.db')
             cursor = sqliteConnection.cursor()
             sqlite_select_Query = "select * from users_data;"
@@ -30,20 +26,23 @@ def index(message=""):
             shows = cursor.fetchall()
             venue_shows = {}
             for i in shows:
-                if i["venue_id"] in venue_shows.Keys():
-                    venue_shows[i["venue_id"]]["venue"].add(i)
+                if i[2] in venue_shows.keys():
+                    venue_shows[i[2]]["shows"].append(i)
                 else:
                     for j in venues:
-                        if j["id"]==i["venue_id"]:
-                            venue_shows[i["venue_id"]]={}
-                            venue_shows[i["venue_id"]]["venue"]=j
-                            venue_shows[i["venue_id"]]["shows"]=[]
-                            venue_shows[i["venue_id"]]["venue"].add(i)
+                        if j[0]==i[2]:
+                            venue_shows[i[2]]={}
+                            venue_shows[i[2]]["venue"]=j
+                            venue_shows[i[2]]["shows"]=[]
+                            venue_shows[i[2]]["shows"].append(i)
+                    
             cursor.close()
 
         except sqlite3.Error as err:
             print("Error while connecting to sqlite", err)
         
+        print("venue shows are as follows")
+        print(venue_shows)
         for i in record:
             if i[1]==username and i[2]==password:
                 return render_template("homepage.html",username=username,venuelist=venue_shows)
