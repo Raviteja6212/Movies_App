@@ -22,6 +22,23 @@ def index(message=""):
             sqlite_select_Query = "select * from users_data;"
             cursor.execute(sqlite_select_Query)
             record = cursor.fetchall()
+            venues_query = "select * from venues;"
+            cursor.execute(venues_query)
+            venues = cursor.fetchall()
+            shows_query = "select * from shows;"
+            cursor.execute(shows_query)
+            shows = cursor.fetchall()
+            venue_shows = {}
+            for i in shows:
+                if i["venue_id"] in venue_shows.Keys():
+                    venue_shows[i["venue_id"]]["venue"].add(i)
+                else:
+                    for j in venues:
+                        if j["id"]==i["venue_id"]:
+                            venue_shows[i["venue_id"]]={}
+                            venue_shows[i["venue_id"]]["venue"]=j
+                            venue_shows[i["venue_id"]]["shows"]=[]
+                            venue_shows[i["venue_id"]]["venue"].add(i)
             cursor.close()
 
         except sqlite3.Error as err:
@@ -29,7 +46,7 @@ def index(message=""):
         
         for i in record:
             if i[1]==username and i[2]==password:
-                return render_template("homepage.html",username=username,venuelist=venues)
+                return render_template("homepage.html",username=username,venuelist=venue_shows)
         return render_template("errorpage.html")
     else:
         return render_template("index.html",error=message)

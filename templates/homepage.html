@@ -9,12 +9,12 @@
         <h1 style="flex-basis:10%">Bookings</h1>
         <h1 style="flex-basis:10%">Logout</h1>
     </div>
-    {% for i in venuelist %}
+    {% for i in venuelist.Values() %}
         <div style="background-color: aquamarine;">
-            <h1 style="color:white;margin:2%">{{i["venue"]}}</h1>
+            <h1 style="color:white;margin:2%">{{i["venue"]["name"]}}</h1>
             <div style="display:flex;color:white;border-radius: 10px;">
                 {% for j in i["shows"] %}
-                    <h1 style="background-color:rgb(72, 70, 70);color:white;flex-basis:20%;margin:2%;border-radius: 10px;">j</h1>
+                    <h1 style="background-color:rgb(72, 70, 70);color:white;flex-basis:20%;margin:2%;border-radius: 10px;">j["name"]</h1>
                 {% endfor %}
             </div>
         </div>
