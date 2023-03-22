@@ -1,0 +1,17 @@
+.textbar{
+    width:40em;
+    height: 2em;
+    border-radius: 10px;
+    margin: 10px;
+    margin-left:33%;
+    padding:5px
+}
+
+.buttons{
+    width:25em;
+    height: 3em;
+    border-radius: 10px;
+    margin: 10px;
+    margin-left:40%;
+    padding:5px
+}
