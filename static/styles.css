@@ -8,10 +8,14 @@
 }
 
 .buttons{
-    width:25em;
+    width:15em;
     height: 3em;
     border-radius: 10px;
     margin: 10px;
-    margin-left:40%;
     padding:5px
+}
+
+.navicon:hover{
+    background-color: rgb(42, 41, 41);
+    border-radius: 10px;
 }

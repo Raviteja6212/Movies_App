@@ -9,14 +9,13 @@
         </script>
     {% endif %}
     <h1 style="color:white;text-align:center;">SITENJOY</h1>
-    <form action="{{ url_for('index') }}" method="post">
+    <form method="post"  action="{{ url_for('index') }}">
         <input class="textbar" type="text" name="username" placeholder="Enter your user name">
         <input class="textbar" type="password" name="password" placeholder="Enter your password">
-        <div>
-            <input class="buttons" type="submit" onsubmit="homepage">
+        <div style="display: flex;margin-left:37%">
+            <input class="buttons" type="submit" value="Log In">
+            <input class="buttons" type="submit" value="Sign Up" formaction="{{ url_for('signup') }}">
         </div>
     </form>
-    <a class="buttons" href="{{ url_for('signup') }}">Sign up</a>
-
 </body>
 </html>

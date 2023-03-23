@@ -79,6 +79,33 @@ def signup():
         
         return redirect(url_for('index',error="User created successfully, you can login now:)Y"))
 
+
+@app.route("/showDetails",methods=["GET","POST"])
+def ViewShow():
+    if request.method=="POST":
+        show_id = request.form['show_id']
+        sqliteConnection = sqlite3.connect('database.db')
+        cursor = sqliteConnection.cursor()
+        shows_query = "select * from shows;"
+        cursor.execute(shows_query)
+        shows = cursor.fetchall()
+        venues_query = "select * from venues;"
+        cursor.execute(venues_query)
+        venues = cursor.fetchall()
+        print("This is the show id received - ")
+        print(show_id) 
+        for i in shows:
+            print("this is the show id - ")
+            print(i[0])
+            print("this is the received id - ")
+            print(show_id) 
+            if int(show_id)==i[0]: 
+                for j in venues:
+                    if j[0]==i[2]: 
+                        return render_template("showdetails.html",showdata=i,venuedata=j)
+        
+        return render_template("errorpage.html")
+
 if __name__=="__main__":
     app.run(debug=True)
     

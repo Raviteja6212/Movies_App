@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <head>
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body  style="background-color: rgb(127, 214, 243);">
     <div style="display:flex;color:white;background-color: aquamarine;border-radius: 10px;">
-        <h1 style="color:white;flex-basis:70%;margin:2%">Welcome {{ username }}</h1>
-        <h1 style="flex-basis:10%">Profile</h1>
-        <h1 style="flex-basis:10%">Bookings</h1>
-        <h1 style="flex-basis:10%">Logout</h1>
+        <h1 style="color:white;flex-basis:60%;margin:2%">Welcome {{ username }}</h1>
+        <h1 class="navicon" style="flex-basis:10%;margin:1%">Profile</h1>
+        <h1 class="navicon" style="flex-basis:10%;margin:1%">Bookings</h1>
+        <h1 class="navicon" style="flex-basis:10%;margin:1%">Logout</h1>
     </div>
     {% for i in venuelist.values() %}
-        <div style="background-color: aquamarine;">
+        <div style="background-color: aquamarine;border-radius: 10px;">
             <h1 style="color:white;margin:2%">{{ i["venue"][1] }}</h1>
             <div style="display:flex;color:white;border-radius: 10px;">
-                {% for j in i["shows"] %}
-                    <h1 style="background-color:rgb(72, 70, 70);color:white;flex-basis:20%;margin:2%;border-radius: 10px;padding: 15px">{{ j[1] }}</h1>
+                {% for show in i["shows"] %}
+                    <div  style="background-color:rgb(72, 70, 70);color:white;flex-basis:20%;margin:2%;border-radius: 10px;padding: 15px">
+                        <h1 style="background-color:rgb(72, 70, 70);color:white;flex-basis:20%;;border-radius: 10px;padding: 15px">{{ show[1] }}</h1>
+                        <form method="POST" action="{{ url_for('ViewShow') }}">
+                            <input type="hidden" name="show_id" value="{{ show[0] }}">
+                            <button type="submit">Book Now!</button>
+                        </form>
+                    </div>
                 {% endfor %}
             </div>
         </div>
