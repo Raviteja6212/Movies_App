@@ -3,19 +3,18 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body style="background-color: rgb(127, 214, 243);"> 
-    {% if error %}
+    {% if logout == "True" %}
         <script>
-            alert("{{error}}")
+            localStorage.removeItem('user_id');
         </script>
     {% endif %}
     <h1 style="color:white;text-align:center;">SITENJOY</h1>
     <form method="post"  action="{{ url_for('index') }}">
         <input class="textbar" type="text" name="username" placeholder="Enter your user name">
         <input class="textbar" type="password" name="password" placeholder="Enter your password">
-        <div style="display: flex;margin-left:37%">
-            <input class="buttons" type="submit" value="Log In">
-            <input class="buttons" type="submit" value="Sign Up" formaction="{{ url_for('signup') }}">
-        </div>
+        <input class="buttons" type="submit" style="margin-left:38%;margin-top:1%" value="Log In">
+        <a class="buttons" style="text-decoration:none;color:black;padding:1% 5%;border:1px solid black;margin-left:53%;margin-top:-2%" href="{{url_for('signup')}}">Sing Up</a>
     </form>
+    
 </body>
 </html>

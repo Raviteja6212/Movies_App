@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body  style="background-color: rgb(127, 214, 243);color:white">
+    <div style="display:flex;color:white;background-color: aquamarine;border-radius: 10px;">
+        <h1 style="color:white;flex-basis:60%;margin:2%"></h1>
+        <h1 class="navicon" style="flex-basis:10%;margin:1%">Profile</h1>
+        <h1 class="navicon" style="flex-basis:10%;margin:1%">Bookings</h1>
+        <h1 class="navicon" style="flex-basis:10%;margin:1%">Logout</h1>
+    </div>
+    {% for i in this_user_shows %}
+        <div  style="background-color:rgb(72, 70, 70);color:white;margin-top:2%;border-radius: 10px;padding: 15px">
+            <h1>{{i[1]}}</h1>
+            <h1>{{i[6]}} - {{i[7]}}</h1>
+            <h1>No.of tickets - {{shows_tickets[i[2]]}}</h1>
+        </div>    
+    {% endfor %}
+</body>
+</html>

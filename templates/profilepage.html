@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body  style="background-color: rgb(127, 214, 243);color:white">
+    <div style="display:flex;color:white;background-color: aquamarine;border-radius: 10px;">
+        <h1 style="color:white;flex-basis:60%;margin:2%"></h1>
+        <h1 class="navicon" style="flex-basis:10%;margin:1%">Profile</h1>
+        <h1 class="navicon" style="flex-basis:10%;margin:1%">Bookings</h1>
+        <h1 class="navicon" style="flex-basis:10%;margin:1%">Logout</h1>
+    </div>
+    <h1>Number of shows visited - {{no_of_shows}}</h1>
+</body>
+</html>
