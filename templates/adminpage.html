@@ -3,5 +3,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body style="background-color: rgb(127, 214, 243);"> 
+    {% if admin_venues == [] %}
+        <button>Add a Venue</button>
+    {% else %}
+        {% for i in admin_venues %}
+        <div style="background-color: aquamarine;border-radius: 10px;">
+            <h1 style="color:white;margin:2%">{{ i[1] }}</h1>
+        {%endfor%}
+    {% endif %}
+    
 </body>
 </html>

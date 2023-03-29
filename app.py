@@ -63,7 +63,14 @@ def index(message=""):
                     
                 return render_template("homepage.html",user_id=i[0],username=username,venuelist=venue_shows,token=jsonify({'token': token}))
             elif i[1]==username and i[2]==password and i[3]==1 and dropdown_value=="admin":
-                return render_template("adminpage.html")
+                venues_query = "select * from venues;"
+                cursor.execute(venues_query)
+                venues = cursor.fetchall()
+                admin_venues=[]
+                for j in venues:
+                    if j[4]==i[0]:
+                        admin_venues.append(j)
+                return render_template("adminpage.html",user_id=i[0],admin_venues=admin_venues)
                 
         return render_template("errorpage.html")
     else:
