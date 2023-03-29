@@ -25,43 +25,46 @@ def generate_token(user_id):
 @app.route("/",methods=["GET","POST"])
 def index(message=""):
     if request.method=="POST":
-        username = request.form.getlist('username')[0]
-        password = request.form.getlist('password')[0]
-        try:
-            sqliteConnection = sqlite3.connect('database.db')
-            cursor = sqliteConnection.cursor()
-            sqlite_select_Query = "select * from users_data;"
-            cursor.execute(sqlite_select_Query)
-            record = cursor.fetchall()
-            venues_query = "select * from venues;"
-            cursor.execute(venues_query)
-            venues = cursor.fetchall()
-            shows_query = "select * from shows;"
-            cursor.execute(shows_query)
-            shows = cursor.fetchall()
-            venue_shows = {}
-            for i in shows:
-                if i[2] in venue_shows.keys():
-                    venue_shows[i[2]]["shows"].append(i)
-                else:
-                    for j in venues:
-                        if j[0]==i[2]:
-                            venue_shows[i[2]]={}
-                            venue_shows[i[2]]["venue"]=j
-                            venue_shows[i[2]]["shows"]=[]
-                            venue_shows[i[2]]["shows"].append(i)
-                    
-            cursor.close()
-
-        except sqlite3.Error as err:
-            print("Error while connecting to sqlite", err)
-        
-        print("venue shows are as follows")
-        print(venue_shows)
+        username = request.form['username']
+        password = request.form['password']
+        dropdown_value = request.form.get('dropdown')
+        sqliteConnection = sqlite3.connect('database.db')
+        cursor = sqliteConnection.cursor()
+        sqlite_select_Query = "select * from users_data;"
+        cursor.execute(sqlite_select_Query)
+        record = cursor.fetchall()
         for i in record:
-            if i[1]==username and i[2]==password:
+            if i[1]==username and i[2]==password and dropdown_value=="user":
                 token = generate_token(i[0])
+                try:
+                    
+                    venues_query = "select * from venues;"
+                    cursor.execute(venues_query)
+                    venues = cursor.fetchall()
+                    shows_query = "select * from shows;"
+                    cursor.execute(shows_query)
+                    shows = cursor.fetchall()
+                    venue_shows = {}
+                    for i in shows:
+                        if i[2] in venue_shows.keys():
+                            venue_shows[i[2]]["shows"].append(i)
+                        else:
+                            for j in venues:
+                                if j[0]==i[2]:
+                                    venue_shows[i[2]]={}
+                                    venue_shows[i[2]]["venue"]=j
+                                    venue_shows[i[2]]["shows"]=[]
+                                    venue_shows[i[2]]["shows"].append(i)
+                            
+                    cursor.close()
+
+                except sqlite3.Error as err:
+                    print("Error while connecting to sqlite", err)
+                    
                 return render_template("homepage.html",user_id=i[0],username=username,venuelist=venue_shows,token=jsonify({'token': token}))
+            elif i[1]==username and i[2]==password and i[3]==1 and dropdown_value=="admin":
+                return render_template("adminpage.html")
+                
         return render_template("errorpage.html")
     else:
         try:
@@ -75,8 +78,8 @@ def signup():
     if request.method=="GET":
         return render_template("singupPage.html")
     else:
-        username = request.form.getlist('username')[0]
-        password = request.form.getlist('password')[0]
+        username = request.form['username']
+        password = request.form['password']
         try:
             sqliteConnection = sqlite3.connect('database.db')
             cursor = sqliteConnection.cursor()
@@ -84,20 +87,27 @@ def signup():
             cursor.execute(sqlite_select_Query)
             record = cursor.fetchall()
             admincode = request.form['admincode']
+            if admincode=="my_secret_code":
+                for i in record:
+                    if i[1]==username:
+                        return render_template("singupPage.html",error="Username already exists !!")
+                
+                Insert_Query = "INSERT INTO users_data (username,password,admin) VALUES (?,?,?)"
+                cursor.execute(Insert_Query,(username,password,1))
+                sqliteConnection.commit()
 
         except sqlite3.Error as error:
-            print("Error while connecting to sqlite", error)
+            for i in record:
+                if i[1]==username:
+                    return render_template("singupPage.html",error="Username already exists !!")
         
-        for i in record:
-            if i[1]==username:
-                return render_template("singupPage.html",error="Username already exists !!")
+            Insert_Query = "INSERT INTO users_data (username,password) VALUES (?,?)"
+            cursor.execute(Insert_Query,(username,password,0))
+            sqliteConnection.commit()
         
-        Insert_Query = "INSERT INTO users_data (username,password) VALUES (?,?)"
-        cursor.execute(Insert_Query,(username,password))
-        sqliteConnection.commit()
         cursor.close()
         
-        return redirect(url_for('index',error="User created successfully, you can login now:)Y"))
+        return redirect(url_for('index'))
 
 
 @app.route("/showDetails",methods=["GET","POST"])
