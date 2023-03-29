@@ -13,10 +13,16 @@
     <div style="display:flex;color:white;background-color: aquamarine;border-radius: 10px;">
         <h1 style="color:white;flex-basis:60%;margin:2%">Welcome {{ username }}</h1>
         <h1 class="navicon" style="flex-basis:10%;margin:1%">
-            <a href="{{url_for('MyProfile',user_id=user_id)}}">Profile</a>
+            <form action="{{url_for('MyProfile')}}" method="POST">
+                <input type="hidden" name="user_id" value="{{ user_id }}">
+                <button type="submit">Profile</button> 
+            </form>   
         </h1>
         <h1 class="navicon" style="flex-basis:10%;margin:1%">
-            <a href="{{url_for('MyBookings',user_id=user_id)}}">Bookings</a>
+            <form action="{{url_for('MyBookings')}}" method="POST">
+                <input type="hidden" name="user_id" value="{{ user_id }}">
+                <button type="submit">Bookings</button> 
+            </form>   
         </h1>
         <h1 class="navicon" style="flex-basis:10%;margin:1%">
             <a href="{{url_for('index',logout="True")}}">Logout</a>

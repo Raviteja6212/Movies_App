@@ -2,7 +2,7 @@ import base64
 import csv
 import datetime
 import os
-from flask import Flask, jsonify,  render_template, request, redirect, url_for
+from flask import Flask, jsonify,  render_template, request, redirect, url_for, session
 from jinja2 import Template
 import sqlite3
 
@@ -23,7 +23,7 @@ def generate_token(user_id):
 
 
 @app.route("/",methods=["GET","POST"])
-def index(message=""):
+def index():
     if request.method=="POST":
         username = request.form['username']
         password = request.form['password']
@@ -45,32 +45,26 @@ def index(message=""):
                     cursor.execute(shows_query)
                     shows = cursor.fetchall()
                     venue_shows = {}
-                    for i in shows:
-                        if i[2] in venue_shows.keys():
-                            venue_shows[i[2]]["shows"].append(i)
+                    for k in shows:
+                        if k[2] in venue_shows.keys():
+                            venue_shows[k[2]]["shows"].append(k)
                         else:
                             for j in venues:
-                                if j[0]==i[2]:
-                                    venue_shows[i[2]]={}
-                                    venue_shows[i[2]]["venue"]=j
-                                    venue_shows[i[2]]["shows"]=[]
-                                    venue_shows[i[2]]["shows"].append(i)
+                                if j[0]==k[2]:
+                                    venue_shows[k[2]]={}
+                                    venue_shows[k[2]]["venue"]=j
+                                    venue_shows[k[2]]["shows"]=[]
+                                    venue_shows[k[2]]["shows"].append(k)
                             
                     cursor.close()
 
                 except sqlite3.Error as err:
-                    print("Error while connecting to sqlite", err)
-                    
+                    print("Error while connecting to sqlite", err) 
+                print(i[0])         
                 return render_template("homepage.html",user_id=i[0],username=username,venuelist=venue_shows,token=jsonify({'token': token}))
             elif i[1]==username and i[2]==password and i[3]==1 and dropdown_value=="admin":
-                venues_query = "select * from venues;"
-                cursor.execute(venues_query)
-                venues = cursor.fetchall()
-                admin_venues=[]
-                for j in venues:
-                    if j[4]==i[0]:
-                        admin_venues.append(j)
-                return render_template("adminpage.html",user_id=i[0],admin_venues=admin_venues)
+                session['user_id']=i[0]
+                return redirect(url_for('ViewVenue'))
                 
         return render_template("errorpage.html")
     else:
@@ -204,7 +198,7 @@ def confirm():
     
 @app.route("/mybookings",methods=["GET","POST"])
 def MyBookings():
-        user_id=request.args.get('user_id')
+        user_id=request.form['user_id']
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
         user_shows_query = "select * from user_shows;"
@@ -215,7 +209,6 @@ def MyBookings():
         shows = cursor.fetchall()
         this_user_shows_ids=[]
         this_user_shows=[]
-        this_user_shows_details=[]
         shows_tickets={}
         for i in user_shows:
             if i[1]==int(user_id):
@@ -233,7 +226,7 @@ def MyBookings():
                 
 @app.route("/myprofile",methods=["GET","POST"])
 def MyProfile():
-    user_id=request.args.get('user_id')
+    user_id=request.form['user_id']
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     user_shows_query = "select * from user_shows;"
@@ -245,6 +238,74 @@ def MyProfile():
             no_of_shows+=1
     return render_template("profilepage.html",no_of_shows=no_of_shows)
 
+@app.route("/addvenue",methods=["GET","POST"])
+def AddVenue():
+    if request.method=="GET":
+        return render_template('addvenue.html')
+    else:
+        user_id=request.form['user_id']
+        name=request.form['name']
+        place=request.form['place']
+        capacity=request.form['capacity']
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO Venues (name, place, capacity, owner) VALUES (?, ?, ?, ?)",(name, place,capacity, user_id))
+        conn.commit()
+        session['user_id']=user_id
+        return redirect(url_for('ViewVenue'))
+    
+
+@app.route("/viewvenues",methods=["GET","POST"])
+def ViewVenue():
+    user_id = session.get('user_id')
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    venues_query = "select * from venues;"
+    cursor.execute(venues_query)
+    venues = cursor.fetchall()
+    
+    admin_venues=[]
+    for j in venues:
+        if j[4]==int(user_id):
+            admin_venues.append(j)
+    if admin_venues!=[]:
+        shows_query = "select * from shows;"
+        cursor.execute(shows_query)
+        shows = cursor.fetchall()
+        admin_shows=[]
+        venue_shows = {}
+        for i in admin_venues:
+            venue_shows[j[2]]={}
+            venue_shows[j[2]]["venue"]=i
+            venue_shows[j[2]]["shows"]=[]
+            for j in shows:
+                    if int(i[0])==j[2]:
+                        venue_shows[j[2]]["shows"].append(j)
+    return render_template("adminpage.html",user_id=user_id,admin_venues=admin_venues,venue_shows=venue_shows)
+
+@app.route("/addshow",methods=["GET","POST"])
+def AddShow():
+    if request.method=="POST":
+        if "vid" in request.form:
+            venue_id=request.form['vid']
+            capacity=request.form['vc']
+            return render_template("addshow.html",venue_id=venue_id,capacity=capacity)
+        else:
+            venue_id=request.form['venue_id']
+            capacity=request.form['capacity']
+            user_id=request.form['user_id']
+            name=request.form['name']
+            rating=request.form['rating']
+            stime=request.form['stime']
+            etime=request.form['etime']
+            tags=request.form['tags']
+            price=request.form['price']
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO shows (name, venue_id, rating, price, start_time, end_time, capacity) VALUES (?, ?, ?, ?, ?, ?, ?)",(name,venue_id, rating, price, stime, etime, capacity))
+            conn.commit()
+            session['user_id']=user_id
+            return redirect(url_for('ViewVenue'))
 if __name__=="__main__":
     app.run(debug=True)
     
