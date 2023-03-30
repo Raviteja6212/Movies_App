@@ -54,8 +54,7 @@ def index():
                                     venue_shows[k[2]]={}
                                     venue_shows[k[2]]["venue"]=j
                                     venue_shows[k[2]]["shows"]=[]
-                                    venue_shows[k[2]]["shows"].append(k)
-                            
+                                    venue_shows[k[2]]["shows"].append(k)                 
                     cursor.close()
 
                 except sqlite3.Error as err:
@@ -96,6 +95,8 @@ def signup():
                 Insert_Query = "INSERT INTO users_data (username,password,admin) VALUES (?,?,?)"
                 cursor.execute(Insert_Query,(username,password,1))
                 sqliteConnection.commit()
+            else:
+                return render_template("singupPage.html")
 
         except sqlite3.Error as error:
             for i in record:
@@ -141,9 +142,7 @@ def ViewShow():
                             if tickets>0 and tickets<i[8]:
                                 return render_template("showdetails.html",showdata=i,venuedata=j,totalPrice=tickets*i[4],tickets=tickets)
                         except Exception as e:
-                            return render_template("showdetails.html",showdata=i,venuedata=j,totalPrice="")
-        
-                
+                            return render_template("showdetails.html",showdata=i,venuedata=j,totalPrice="")          
         return render_template("errorpage.html")
     else:
         show_id=request.args.get('show_id')
@@ -258,12 +257,14 @@ def AddVenue():
 @app.route("/viewvenues",methods=["GET","POST"])
 def ViewVenue():
     user_id = session.get('user_id')
+    print("view venues having user id - ") 
+    print(user_id)
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     venues_query = "select * from venues;"
     cursor.execute(venues_query)
     venues = cursor.fetchall()
-    
+    venue_shows = {}
     admin_venues=[]
     for j in venues:
         if j[4]==int(user_id):
@@ -272,40 +273,63 @@ def ViewVenue():
         shows_query = "select * from shows;"
         cursor.execute(shows_query)
         shows = cursor.fetchall()
-        admin_shows=[]
-        venue_shows = {}
+        
         for i in admin_venues:
-            venue_shows[j[2]]={}
-            venue_shows[j[2]]["venue"]=i
-            venue_shows[j[2]]["shows"]=[]
+            venue_shows[i[0]]={}
+            venue_shows[i[0]]["venue"]=i
+            venue_shows[i[0]]["shows"]=[]
             for j in shows:
                     if int(i[0])==j[2]:
-                        venue_shows[j[2]]["shows"].append(j)
+                        venue_shows[i[0]]["shows"].append(j)
     return render_template("adminpage.html",user_id=user_id,admin_venues=admin_venues,venue_shows=venue_shows)
 
+@app.route("/editvenues",methods=["GET","POST"])
+def EditVenue():
+    if request.method=="GET":
+        venue_id=request.args.get('venue_id')
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute("select * from venues where id=?",(venue_id,))
+        row = cursor.fetchone()
+        return render_template("editvenue.html",venue_id=venue_id,name=row[1],place=row[2],capacity=row[3])
+    else:
+        venue_id=request.form["venue_id"]
+        user_id=session.get('user_id')
+        name=request.form["name"]
+        place=request.form["place"]
+        capacity=request.form["capacity"]
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute("UPDATE Venues SET name = ?, place = ?, capacity = ? WHERE id=?",(name, place, capacity,venue_id))
+        conn.commit()
+        return redirect(url_for('ViewVenue'))
+            
+        
+    
 @app.route("/addshow",methods=["GET","POST"])
 def AddShow():
-    if request.method=="POST":
-        if "vid" in request.form:
-            venue_id=request.form['vid']
-            capacity=request.form['vc']
-            return render_template("addshow.html",venue_id=venue_id,capacity=capacity)
-        else:
-            venue_id=request.form['venue_id']
-            capacity=request.form['capacity']
-            user_id=request.form['user_id']
-            name=request.form['name']
-            rating=request.form['rating']
-            stime=request.form['stime']
-            etime=request.form['etime']
-            tags=request.form['tags']
-            price=request.form['price']
-            conn = sqlite3.connect('database.db')
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO shows (name, venue_id, rating, price, start_time, end_time, capacity) VALUES (?, ?, ?, ?, ?, ?, ?)",(name,venue_id, rating, price, stime, etime, capacity))
-            conn.commit()
-            session['user_id']=user_id
-            return redirect(url_for('ViewVenue'))
+    if request.method=="GET":
+        venue_id=request.args.get('venue_id')
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute("select * from venues where id=?",(venue_id,))
+        row = cursor.fetchone()
+        return render_template("addshow.html",venue_id=row,capacity=row[3])
+    else:
+        venue_id=request.form['venue_id']
+        capacity=request.form['capacity']
+        user_id=request.form['user_id']
+        name=request.form['name']
+        rating=request.form['rating']
+        stime=request.form['stime']
+        etime=request.form['etime']
+        tags=request.form['tags']
+        price=request.form['price']
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO shows (name, venue_id, rating, price, start_time, end_time, capacity) VALUES (?, ?, ?, ?, ?, ?, ?)",(name,venue_id, rating, price, stime, etime, capacity))
+        conn.commit()
+        return redirect(url_for('ViewVenue'))
 if __name__=="__main__":
     app.run(debug=True)
     

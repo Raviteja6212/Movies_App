@@ -12,9 +12,10 @@
         </h1>
     </div>
     <form method="POST">
-        <h1>Name of the venue - </h1><input type="text" name="name">
-        <h1>Location of the venue - </h1><input type="text" name="place">
-        <h1>Capacity of the venue - </h1><input type="integer" name="capacity">
+        <input type="hidden" name="venue_id" value="{{venue_id}}">
+        <h1>Name of the venue - </h1><input type="text" name="name" value="{{name}}">
+        <h1>Location of the venue - </h1><input type="text" name="place" value="{{place}}">
+        <h1>Capacity of the venue - </h1><input type="integer" name="capacity" value="{{capacity}}">
         <input type="submit">
     </form>
 </body>
