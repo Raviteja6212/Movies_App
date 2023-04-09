@@ -383,29 +383,61 @@ def Summary():
     user_id = session.get('user_id')
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-    cursor.execute("select id from Venues where owner = ?",(user_id,))
+    cursor.execute("select * from Venues where owner = ?",(user_id,))
     admin_venues = cursor.fetchall()
+    
+    admin_venues_id=[]
+    for i in admin_venues:
+        admin_venues_id.append(i[0])
+        
     admin_shows = []
+    admin_shows_id = []
+    
     shows_visited={}
     venues_visited={}
     venue_shows = {}
-    admin_venues=list(admin_venues)
-    if admin_venues!=[]:
-        shows_query = "select * from shows;"
-        cursor.execute(shows_query)
-        shows = cursor.fetchall()
-        for i in shows:
-            if i[2] in admin_venues:
-                admin_shows.append(i[0])
-                
-        shows_query = "select * from user_shows;"
-        cursor.execute(shows_query)
-        user_shows = cursor.fetchall()
-        
-        for i in user_shows:
-            if i[2] in admin_shows:
+    
+    shows_query = "select * from shows;"
+    cursor.execute(shows_query)
+    shows = cursor.fetchall()
+    
+    for i in shows:
+        if i[2] in admin_venues_id:
+            admin_shows.append(i)
+            admin_shows_id.append(i[0])
+            
+    shows_query = "select * from user_shows;"
+    cursor.execute(shows_query)
+    
+    user_shows = cursor.fetchall()
+    for i in user_shows:
+        print(i[2])
+        if i[2] in admin_shows_id:
+            if i[2] not in shows_visited:
+                shows_visited[i[2]]=i[3]
+            else:                
                 shows_visited[i[2]]+=i[3]
-                venues_visited[i[4]]+=i[3]
+    
+    for i in admin_venues:
+        for j in admin_shows:
+            if j[2]==i[0] and j[0] in shows_visited:
+                if i[0] not in venues_visited:
+                    venues_visited[i[0]]=shows_visited[j[0]]
+                else:                
+                    venues_visited[i[0]]+=shows_visited[j[0]]
+    
+               
+    for i in admin_venues:
+        venue_shows[i[0]]={}
+        venue_shows[i[0]]["venue"]=i
+        venue_shows[i[0]]["shows"]=[]
+        for j in shows:
+                if int(i[0])==j[2]:
+                    venue_shows[i[0]]["shows"].append(j)
+    return render_template("summary.html",user_id=user_id,admin_venues=admin_venues,venue_shows=venue_shows,venues_visited=venues_visited,shows_visited=shows_visited)
+
+        
+        
         
 if __name__=="__main__":
     app.run(debug=True)
