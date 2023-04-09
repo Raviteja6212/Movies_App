@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
 </head>
 <body style="background-color: rgb(127, 214, 243);"> 
     {% if error %}
@@ -13,8 +13,8 @@
         <input class="textbar" type="text" name="username" placeholder="Enter your user name">
         <input class="textbar" type="password" name="password" placeholder="Enter your password">
         <input class="textbar" type="password" name="admincode" placeholder="Are you and Admin? Enter the Admin Code.">
-        <div style="margin-left:42%">
-            <input class="buttons" type="submit" onsubmit="homepage">
+        <div style="margin-left:45%">
+            <input class="atag" type="submit" onsubmit="homepage">
         </div>
     </form>
 </body>

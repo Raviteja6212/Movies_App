@@ -1,3 +1,24 @@
+
+.atag {
+    display: inline-block;
+    padding: 0.6em 1.2em;
+    text-decoration: none;
+    background-color: #709aef;
+    color: #f3eeee;
+    border-radius: 0.25em;
+    margin: 0.5em;
+}
+
+a {
+    display: inline-block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    background-color: #709aef;
+    color: #f3eeee;
+    border-radius: 0.25em;
+    margin: 0.5em;
+}
+
 .textbar{
     width:40em;
     height: 2em;
@@ -22,3 +43,4 @@
     background-color: rgb(42, 41, 41);
     border-radius: 10px;
 }
+

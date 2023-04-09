@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
 </head>
 <body  style="background-color: rgb(127, 214, 243);">
     {% block content %}
@@ -12,21 +12,9 @@
     {% endblock %}
     <div style="display:flex;color:white;background-color: aquamarine;border-radius: 10px;">
         <h1 style="color:white;flex-basis:60%;margin:2%">Welcome {{ username }}</h1>
-        <h1 class="navicon" style="flex-basis:10%;margin:1%">
-            <form action="{{url_for('MyProfile')}}" method="POST">
-                <input type="hidden" name="user_id" value="{{ user_id }}">
-                <button type="submit">Profile</button> 
-            </form>   
-        </h1>
-        <h1 class="navicon" style="flex-basis:10%;margin:1%">
-            <form action="{{url_for('MyBookings')}}" method="POST">
-                <input type="hidden" name="user_id" value="{{ user_id }}">
-                <button type="submit">Bookings</button> 
-            </form>   
-        </h1>
-        <h1 class="navicon" style="flex-basis:10%;margin:1%">
-            <a href="{{url_for('index',logout="True")}}">Logout</a>
-        </h1>
+        <h1><a href="{{url_for('MyProfile')}}">Profile</a></h1>
+        <h1><a href="{{url_for('MyBookings')}}">Bookings</a></h1>
+        <h1><a href="{{url_for('index')}}">Logout</a></h1>
     </div>
     {% for i in venuelist.values() %}
         <div style="background-color: aquamarine;border-radius: 10px;">
@@ -35,9 +23,7 @@
                 {% for show in i["shows"] %}
                     <div  style="background-color:rgb(72, 70, 70);color:white;flex-basis:20%;margin:2%;border-radius: 10px;padding: 15px">
                         <h1 style="background-color:rgb(72, 70, 70);color:white;flex-basis:20%;;border-radius: 10px;padding: 15px">{{ show[1] }}</h1>
-                        <form method="POST" action="{{ url_for('ViewShow',show_id=show[0]) }}">
-                            <button type="submit">Book Now!</button>
-                        </form>
+                        <a href="{{ url_for('ViewShow',show_id=show[0]) }}">Book Now!</a>
                     </div>
                 {% endfor %}
             </div>

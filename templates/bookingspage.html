@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
 </head>
 <body  style="background-color: rgb(127, 214, 243);color:white">
     <div style="display:flex;color:white;background-color: aquamarine;border-radius: 10px;">
         <h1 style="color:white;flex-basis:60%;margin:2%"></h1>
-        <h1 class="navicon" style="flex-basis:10%;margin:1%">Profile</h1>
-        <h1 class="navicon" style="flex-basis:10%;margin:1%">Bookings</h1>
-        <h1 class="navicon" style="flex-basis:10%;margin:1%">Logout</h1>
+        <h1><a href="{{url_for('MyProfile')}}">Profile</a></h1>
+        <h1><a href="{{url_for('homepage')}}">Home</a></h1>
+        <h1><a href="{{url_for('index')}}">Logout</a></h1>
     </div>
     {% for i in this_user_shows %}
         <div  style="background-color:rgb(72, 70, 70);color:white;margin-top:2%;border-radius: 10px;padding: 15px">
